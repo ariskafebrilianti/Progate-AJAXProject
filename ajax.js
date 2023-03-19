@@ -1,18 +1,40 @@
-async function getData(callback) {
-    const data = await fetch("https://api.covid19api.com/summary")
-    const res = await data.json()
-    
-    callback(res)
-}
+fetch("https://api.covid19api.com/summary")
+  .then((response) => response.json())
+  .then((data) => {
+    const globalData = data.Global;
+    const totalCases = globalData.TotalConfirmed;
+    const totalDeaths = globalData.TotalDeaths;
+    const totalRecovered = globalData.TotalRecovered;
 
+    const countries = data.Countries;
 
-function renderData(data) {
-    console.log(data)
-    const userElement = document.getElementById("users")
-    const globalData =data.Global
-    const totalCases = globalData.TotalConfirmed
-    const totalDeaths = globalData.totalDeaths
-    const totalRecovered = globalData.totalRecovered
-}
+    console.log(countries.length);
+    for (let i = 0; i < countries.length; i++) {
+      const div = document.createElement("div");
+      div.id = "country";
+      document.getElementById("countries").appendChild(div);
 
-getData(renderData)
+    }
+    for (let i = 0; i < countries.length; i++) {
+      const ele = document.createElement("h3");
+      ele.innerHTML = countries[i].Slug;
+
+      const countryCases = document.createElement("h4");
+      countryCases.innerText = "Cases: ";
+      countryCases.innerText += countries[i].TotalConfirmed;
+
+      const countryDeaths = document.createElement("h4");
+      countryDeaths.innerText = "Deaths: ";
+      countryDeaths.innerText += countries[i].TotalDeaths;
+
+      document.querySelectorAll("#country")[i].appendChild(ele);
+      document.querySelectorAll("#country")[i].appendChild(countryCases);
+      document.querySelectorAll("#country")[i].appendChild(countryDeaths);
+    }
+
+    document.getElementById("totalCases").innerText += " " + totalCases;
+    document.getElementById("totalDeaths").innerText += " " + totalDeaths;
+    document.getElementById("totalRecovered").innerText += " " + (totalCases - totalDeaths);
+  })
+
+  .catch((error) => console.error(error));
